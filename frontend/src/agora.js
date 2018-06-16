@@ -24,7 +24,7 @@ class VideoChat extends HTMLElement {
         client.join(null, "webtest", undefined, function(uid){
             console.log("User " + uid + " join channel successfully");
             console.log("Timestamp: " + Date.now());
-
+            
             var stream = AgoraRTC.createStream({
                 streamID: uid,
                 audio:true,
@@ -35,23 +35,27 @@ class VideoChat extends HTMLElement {
             stream.setVideoProfile("480p_4");
             stream.init(function(){
                 console.log("Local stream initialized");
+
+                client.publish(stream, function(err){
+                    console.log("Publish stream failed", err);
+                    console.log('I AM THE STREAM', stream);
+                });
+
+                client.on('stream-added', function(evt) {
+                    var stream = evt.stream;
+                    console.log("New stream added: " + stream.getId());
+                    console.log("Timestamp: " + Date.now());
+                    console.log("Subscribe ", stream);
+
+                    client.subscribe(stream, function(err) {
+                        console.log("Subscribe stream failed", err);
+                   });
+
+                   stream.play("agora-remote");                
+                });
+   
             });
-
-            // client.publish(stream, function(err){
-            //     console.log("Publish stream failed", err);
-            // });
-
-            client.on('stream-added', function(evt) {
-                var stream = evt.stream;
-                console.log("New stream added: " + stream.getId());
-                console.log("Timestamp: " + Date.now());
-                console.log("Subscribe ", stream);
-            //Subscribe to a remote stream after a new stream is added
-            client.subscribe(stream, function(err) {
-                console.log("Subscribe stream failed", err);
-               });
-            });
-
+            
             client.on('peer-leave', function(evt) {
                 console.log("Peer has left: " + evt.uid);
                 console.log("Timestamp: " + Date.now());
@@ -75,7 +79,6 @@ class VideoChat extends HTMLElement {
                 console.log("Timestamp: " + Date.now());
                 console.log(evt);
             });
-            stream.play("agora-remote");
         });   
 
     }
