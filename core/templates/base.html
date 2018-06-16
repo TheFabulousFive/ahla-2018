@@ -45,6 +45,24 @@
 <div class="ui container">
     {% block content %}
     {% endblock content %}
+
+
+    <script>
+        var socket = new WebSocket('ws://' + window.location.host + '/user/');
+        socket.onopen = function open() {
+            console.log('WebSockets connection created.');
+        };
+        socket.onmessage = function (event) {
+            console.log(event.data);
+        }
+
+        if (socket.readyState == WebSocket.OPEN) {
+            socket.onopen();
+            socket.send(JSON.stringify({
+                message: "yolo check me out in the WS frames "
+            }));
+        }
+    </script>
 </div>
 
 </body>
