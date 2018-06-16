@@ -3,10 +3,10 @@ module Main exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onInput)
+import Html.Events exposing (onInput, onClick)
 import Keyboard
 import WebSocket
-import Json.Decode exposing (decodeString, field, Decoder, int, string)
+import Json.Decode exposing (decodeString, field, Decoder, int, string, map4, bool)
 
 type alias ChatMessage = 
     {
@@ -28,9 +28,12 @@ type Msg
     | KeyMsg Keyboard.KeyCode
     | MouseMovement Int Int
     | WSMessage String
+    | SendChatMessage String
     | Input String
     | Messages List
     -- | MessagesFromClinicians List
+
+chatWSEnpoint = "ws://localhost:8000/user/"
 
 mockMessages = [{
             name = "Steve", 
@@ -76,6 +79,7 @@ update msg model =
         WSMessage ws_msg ->
             let
                 result = decodeString (field "message" string) ws_msg
+                -- map2 ChatMessage (field "uid" string) (field "name" string) (field "message" string) (field "is_patient" bool)
                 resultMessage = decodeMessage <| result
                 udpatedMessageFeed = model.messages ++ [{
                     name = "Sue",
@@ -85,13 +89,15 @@ update msg model =
                 }]
             in
                 ( { model | message = resultMessage, messages = udpatedMessageFeed} , Cmd.none )
+        SendChatMessage chatMessage ->
+            ( model, WebSocket.send chatWSEnpoint chatMessage)
         _ ->
             ( model, Cmd.none )
 
 -- Put websockets subscriotions here
 subscriptions : Model -> Sub Msg
 subscriptions model = Sub.batch [
-    WebSocket.listen "ws://localhost:8000/user/" WSMessage
+    WebSocket.listen chatWSEnpoint WSMessage
     ]
 
 videoChatElement : List (Attribute msg) -> List (Html msg) -> Html msg
@@ -156,7 +162,7 @@ view model =
                     input [placeholder "message here"] []
                 ]
                 ,chatSend [] [
-                    button [] [ text "Send Message" ]   
+                    button [onClick <| SendChatMessage "ww"] [ text "Send Message" ]   
                 ]
             ]
         ]
