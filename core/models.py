@@ -31,6 +31,7 @@ class User(AbstractBaseUser, GenericBaseClass, PermissionsMixin):
 
     username = models.CharField(max_length=20, unique=True)
     role = models.CharField(choices=USER_ROLE_CHOICES, default='patient', max_length=20)
+    language = models.CharField(max_length=50, default='English', null=False)
 
     def is_professional(self):
         return self.role == 'professional'
@@ -54,15 +55,20 @@ class Conversation(GenericBaseClass):
         ('suspended', 'Suspended'),
     )
     # Professional|Patient value can be NULL because initially conversation is started by one party
-    professional = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='professional', null=True)
-    patient = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='patient', null=True)
+    professional = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='professional', null=True)
+    patient = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='patient', null=True)
     professional_penname = models.CharField(max_length=20,
                                             default=get_random_string,
                                             null=False)
     patient_penname = models.CharField(max_length=20,
                                        default=get_random_string,
                                        null=False)
+
+    title = models.CharField(max_length=300, null=False, blank=True)
+    tags = models.CharField(max_length=500, null=False, blank=True)
     is_patient_anonymous = models.BooleanField(default=True, null=False)
+    status = models.CharField(choices=STATUS_OPTIONS, max_length=20, default='pending')
+
 
     def activate(self):
         self.status = 'active'
@@ -79,3 +85,16 @@ class Conversation(GenericBaseClass):
     def close(self):
         self.status = 'closed'
         self.save()
+
+
+class Message(GenericBaseClass):
+    MESSAGE_STATUS_CHOICES = (
+        ('active', 'Active'),
+        ('suspended', 'Suspended'),
+    )
+
+    conversation = models.ForeignKey(Conversation)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    text = models.TextField(null=False, blank=True)
+    status = models.CharField(choices=MESSAGE_STATUS_CHOICES, default='active', null=False, max_length=30)
+

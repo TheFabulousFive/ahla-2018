@@ -20,12 +20,12 @@
             <a class="active item">
                 Home
             </a>
-            <a class="item">
-                Messages
-            </a>
 
             <div class="right menu">
                 {% if request.user.is_authenticated %}
+                <a class="item" href="{% url 'user:messages' %}">
+                    Messages
+                </a>
                 <a class="ui item">
                     Logout
                 </a>
