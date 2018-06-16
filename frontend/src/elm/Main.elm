@@ -1,17 +1,13 @@
 module Main exposing (..)
 
 import Html exposing (..)
-
 import Keyboard
 import WebSocket
 
 
 type alias Model =
     {
-        currentSlide : Int,
-        counter: Int,
-        mouseX: Int, 
-        mouseY: Int,
+        -- input : String
         message: String
     }
 
@@ -21,9 +17,10 @@ type Msg
     | KeyMsg Keyboard.KeyCode
     | MouseMovement Int Int
     | WSMessage String
+    | Input String
 
 initState : Model 
-initState = { currentSlide = 0, counter = 0, mouseX = 0, mouseY = 0, message = "" }
+initState = { message = "" }
 
 init : ( Model, Cmd Msg )
 init =
@@ -41,12 +38,17 @@ update msg model =
 -- Put websockets subscriotions here
 subscriptions : Model -> Sub Msg
 subscriptions model = Sub.batch [
-    WebSocket.listen "ws://localhost:8081/" WSMessage
+    WebSocket.listen "ws://localhost:8000/" WSMessage
     ]
 
 -- View code goes here
 view : Model -> Html Msg
-view model = div [] [text "what is this", text model.message ]
+view model = div [] [ text "what is this", text model.message ]
+    -- div []
+    --     [ input [onInput Input, value model.input] []
+    -- , button [onClick Send] [text "Send"]
+    -- , div [] (List.map viewMessage (List.reverse model.messages))
+    -- ]
 
 -- Entry point
 main : Program Never Model Msg
