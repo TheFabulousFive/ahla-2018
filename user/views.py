@@ -112,7 +112,7 @@ def join_conversation(request, conversation_id):
         conversation = Conversation.objects.get(pk=conversation_id)
         if str(conversation.patient.pk) != str(user.pk):
             assert user.is_professional(), "You must be a validated professional."
-        assert conversation.status not in ['closed', 'active', 'suspended']
+        assert conversation.status not in ['closed', 'suspended'], "Conversation is not available"
         conversation.professional = user
         conversation.save()
         conversation.activate()
