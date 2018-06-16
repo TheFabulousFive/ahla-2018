@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (..)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 import Keyboard
@@ -21,6 +21,8 @@ type Msg
     | MouseMovement Int Int
     | WSMessage String
     | Input String
+    | Messages List
+    -- | MessagesFromClinicians List
 
 initState : Model 
 initState = { message = "" }
@@ -28,6 +30,8 @@ initState = { message = "" }
 init : ( Model, Cmd Msg )
 init =
     ( initState, Cmd.none )
+    
+-- Messages = [ [ "Hi", "I need help", "I'm sad", "My dog died"], ["oh wow"]]
 
 -- Model updates here
 update : Msg -> Model -> ( Model, Cmd msg )
@@ -50,24 +54,47 @@ videoChatElement =
     
 appContainer attrs =
     div <| [class "protea-app-wrapper"] ++ attrs
+-- Chat
+chatContainer attrs =
+    div <| [class "semantic ui stuff"] ++ attrs
 
+chatClose attrs =
+    div <| [class "semantic ui stuff"] ++ attrs
+
+chatInput attrs =
+    div <| [class "semantic ui stuff"] ++ attrs
+
+chatSend attrs =
+    button <| [class "semantic ui stuff"] ++ attrs
+
+shareIdentitySwitch attrs =
+    button <| [class "semantic ui stuff"] ++ attrs
+
+chatHeader attrs =
+    div <| [class "semantic ui stuff"] ++ attrs
 
 -- View code goes here
 view : Model -> Html Msg
 
 view model = 
     appContainer [] [
-        text "Pluto is not a planet"
-       ,text model.message
-        ,videoChatElement [] []
-        -- -- User Info
-        -- ,input [ placeholder "User name", onInput Username ] []
-        -- ,[ button [ onClick Decrement ] [ text "Share Current Location" ]
-        -- ,ul [class "users-near"]
-        --     [ li [] [text "Talking"]
-        --     , li [] [text "Listening"]
-        --     ]
-    ]
+        
+       chatContainer [] [
+           chatHeader[] [
+            chatClose [] [text "<-"]
+            ,shareIdentitySwitch [] [text "Share your Identity"]
+           ]
+            ,text "I am container"
+            ,text "Pluto is not a planet"
+            ,text model.message
+            ,chatInput [] [
+                input [placeholder "message here"] []
+            ]
+            ,chatSend [] [
+                button [] [ text "Send Message" ]   
+            ]
+        ]
+        ]
 
 -- Entry point
 main : Program Never Model Msg
