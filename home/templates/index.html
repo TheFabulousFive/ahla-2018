@@ -1,27 +1,39 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Protea</title>
-    <script src="https://cdn.agora.io/sdk/web/AgoraRTCSDK-2.3.1.js"></script> 
+{% extends 'base.html' %}
 
-</head>
-<body>
+{% block title %}
+Welcome to Protea
+{% endblock title %}
 
-<div id="main"></div>
-<script src="/static/dist/bundle.js"></script>
-<script>
-    var socket  = new WebSocket('ws://'+ window.location.host + '/user/');
-    socket.onopen = function open() {
-        console.log('WebSockets connection created.');
-    };
+{% block content %}
+<div class="ui grid">
+    <div class="row">
+        <div class="sixteen wide fluid column">
+            <h3>
+                Hi, Welcome to Protea
+            </h3>
+            <p>
+                This is our homepage
+            </p>
+        </div>
 
-    if (socket.readyState == WebSocket.OPEN) {
-        socket.onopen();
-        socket.send(JSON.stringify({
-            message: "yolo check me out in the WS frames "
-        }));
-    }
-</script>
+        <div id="main"></div>
+        <script src="https://cdn.agora.io/sdk/web/AgoraRTCSDK-2.3.1.js"></script> 
+        <script src="/static/dist/bundle.js"></script>
+        <script>
+            var socket = new WebSocket('ws://' + window.location.host + '/user/');
+            socket.onopen = function open() {
+                console.log('WebSockets connection created.');
+            };
 
-</body>
-</html>
+            if (socket.readyState == WebSocket.OPEN) {
+                socket.onopen();
+                socket.send(JSON.stringify({
+                    message: "yolo check me out in the WS frames "
+                }));
+            }
+        </script>
+
+    </div>
+
+</div>
+{% endblock %}
