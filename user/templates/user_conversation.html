@@ -18,11 +18,14 @@ Hello {{ conversation.title }}
                 {{ conversation.patient_penname }}
 
             </p>
+
+            <div id="main"></div>
         </div>
         <script>
             var conversation_id = "{{ conversation.pk }}";
         </script>
 
+        <script src="/static/dist/bundle.js"></script>
     </div>
 
 </div>

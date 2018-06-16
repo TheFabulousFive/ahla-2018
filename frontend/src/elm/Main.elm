@@ -6,13 +6,13 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
 import Keyboard
 import WebSocket
-import Json.Decode exposing (decodeString, field, Decoder, int, string, map4, bool)
+import Json.Decode exposing (decodeString, field, Decoder, int, string, map5, bool)
 import Json.Encode
-import ChatMessageHelper
+import Http
 
 type alias ChatMessage = 
     {
-        timestamp: Int,
+        timestamp: String,
         uid: String,
         name: String,
         text: String,
@@ -23,7 +23,8 @@ type alias Model =
     {
         messages: List(ChatMessage),
         message: String,
-        currentMessageBuffer: String
+        currentMessageBuffer: String,
+        conversationID: String
     }
 
 type Msg
@@ -36,31 +37,33 @@ type Msg
     | Input String
     | Messages List
     | OnMessageTextInput String
+    | FetchAllMessages
+    | ReceiveMessages  (Result Http.Error String)
     -- | MessagesFromClinicians List
 
 chatWSEnpoint = "ws://localhost:8000/user/"
 
 mockMessages = [{
-            timestamp = 0000000000,
+            timestamp = "222",
             name = "Steve", 
             uid = "wwwww",
             text = "I am here",
             isPatient = True
         }, {
-            timestamp = 0000000000,
+            timestamp =  "222",
             name = "Steve", 
             uid = "wwwww",
             text = "I am here",
             isPatient = True
         },{
-            timestamp = 0000000000,
+            timestamp =  "222",
             name = "Sue", 
             uid = "wwwww",
             text = "I am here",
             isPatient = False
         },
         {
-            timestamp = 0000000000,
+            timestamp =  "222",
             name = "Steve", 
             uid = "wwwww",
             text = "I am here",
@@ -68,13 +71,16 @@ mockMessages = [{
         }]
 
 initState : Model 
-initState = { messages = mockMessages, currentMessageBuffer = "", message = "" }
+initState = { messages = mockMessages, currentMessageBuffer = "", message = "", conversationID = ""}
 
-init : ( Model, Cmd Msg )
-init =
-    ( initState, Cmd.none )
-    
--- Messages = [ [ "Hi", "I need help", "I'm sad", "My dog died"], ["oh wow"]]
+type alias Flags = 
+    {
+        conversationID : String    
+    }
+
+init : Flags -> ( Model, Cmd Msg )
+init flags = 
+    ( { initState | conversationID = flags.conversationID }, getAllMessages flags.conversationID )
 
 decodeMessage m = 
     -- map2 ChatMessage (field "uid" string) (field "name" string) (field "message" string) (field "is_patient" bool)
@@ -93,8 +99,26 @@ encodeChatMessage uid message =
     in
         Json.Encode.encode 0 chatEncoder        
 
+extractArray k =
+    case k of
+        Ok s ->
+            s
+        Err err ->
+            []
+
+messageListDecoder = map5 ChatMessage (field "created_at" string) (field "uid" string) (field "name" string) (field "message" string) (field "is_patient" bool)
+
+getAllMessages conversationID = 
+  let
+     
+    url = "http://localhost:8000/user/conversation/messages/all/" ++ conversationID ++ "/"
+    request =
+      Http.getString url
+  in
+    Http.send ReceiveMessages request
+
 -- Model updates here
-update : Msg -> Model -> ( Model, Cmd msg )
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model = 
     case msg of
         OnMessageTextInput message ->
@@ -104,7 +128,7 @@ update msg model =
                 result = decodeString (field "message" string) ws_msg
                 resultMessage = decodeMessage <| result
                 udpatedMessageFeed = model.messages ++ [{
-                    timestamp = 0000000000,
+                    timestamp = "0000000000",
                     name = "Sue",
                     uid = "wwwww",
                     text = resultMessage,
@@ -112,12 +136,25 @@ update msg model =
                 }]
             in
                 ( { model | message = resultMessage, messages = udpatedMessageFeed} , Cmd.none )
+
+        FetchAllMessages ->
+            ( model, getAllMessages model.conversationID)
+            
         SendChatMessage ->
             let
                 messageJSON = 
                     encodeChatMessage "0000" model.currentMessageBuffer
             in
                 ( { model | currentMessageBuffer = "" }, WebSocket.send chatWSEnpoint messageJSON)
+        ReceiveMessages (Ok s) ->
+            let              
+                listDecoder = Json.Decode.at ["data", "messages"] (Json.Decode.list messageListDecoder)
+                newMessages = decodeString listDecoder s |> extractArray
+            in
+                ( { model | currentMessageBuffer = "", messages = newMessages }, Cmd.none)
+
+        ReceiveMessages (Err err) ->
+                ( { model | currentMessageBuffer = (toString err) }, Cmd.none)                
         _ ->
             ( model, Cmd.none )
 
@@ -197,9 +234,9 @@ view model =
         ]
 
 -- Entry point
-main : Program Never Model Msg
+main : Program Flags Model Msg
 main =
-    program
+    programWithFlags
         { init = init
         , view = view
         , update = update
