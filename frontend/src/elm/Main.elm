@@ -20,7 +20,8 @@ type alias ChatMessage =
 type alias Model =
     {
         messages: List(ChatMessage),
-        message: String 
+        message: String,
+        currentMessageBuffer: String
     }
 
 type Msg
@@ -32,6 +33,7 @@ type Msg
     | SendChatMessage String
     | Input String
     | Messages List
+    | OnMessageTextInput String
     -- | MessagesFromClinicians List
 
 chatWSEnpoint = "ws://localhost:8000/user/"
@@ -64,7 +66,7 @@ mockMessages = [{
         }]
 
 initState : Model 
-initState = { messages = mockMessages, message = "" }
+initState = { messages = mockMessages, currentMessageBuffer = "", message = "" }
 
 init : ( Model, Cmd Msg )
 init =
@@ -81,6 +83,8 @@ decodeMessage m =
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg model = 
     case msg of
+        OnMessageTextInput message ->
+            ( { model | currentMessageBuffer = message}, Cmd.none)
         WSMessage ws_msg ->
             let
                 result = decodeString (field "message" string) ws_msg
@@ -96,7 +100,7 @@ update msg model =
             in
                 ( { model | message = resultMessage, messages = udpatedMessageFeed} , Cmd.none )
         SendChatMessage chatMessage ->
-            ( model, WebSocket.send chatWSEnpoint chatMessage)
+            ( { model | currentMessageBuffer = "" }, WebSocket.send chatWSEnpoint chatMessage)
         _ ->
             ( model, Cmd.none )
 
@@ -159,13 +163,15 @@ view model =
         
        chatContainer [] [
            chatHeader[] [
-            chatClose [] [text "<-", text model.message]
+            chatClose [] [text "<-", text model.message, text model.currentMessageBuffer]
             ,shareIdentitySwitch [] [text "Share your Identity"]
            ]
             ,chatFeed model.messages
             ,chatFooter [] [
                 chatInput [] [
-                    input [placeholder "message here"] []
+                    input [onInput OnMessageTextInput, 
+                        value model.currentMessageBuffer, 
+                        placeholder "Enter message here"] []
                 ]
                 ,chatSend [] [
                     button [onClick <| SendChatMessage "ww"] [ text "Send Message" ]   
