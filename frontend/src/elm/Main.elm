@@ -56,7 +56,7 @@ appContainer attrs =
     div <| [class "protea-app-wrapper"] ++ attrs
 -- Chat
 chatContainer attrs =
-    div <| [class "semantic ui stuff"] ++ attrs
+    div <| [class "chat-container semantic ui stuff"] ++ attrs
 
 chatClose attrs =
     div <| [class "semantic ui stuff"] ++ attrs
@@ -73,6 +73,9 @@ shareIdentitySwitch attrs =
 chatHeader attrs =
     div <| [class "semantic ui stuff"] ++ attrs
 
+chatFooter attrs = 
+    div <| [class "chat-footer"] ++ attrs
+
 -- View code goes here
 view : Model -> Html Msg
 
@@ -84,14 +87,14 @@ view model =
             chatClose [] [text "<-"]
             ,shareIdentitySwitch [] [text "Share your Identity"]
            ]
-            ,text "I am container"
-            ,text "Pluto is not a planet"
-            ,text model.message
-            ,chatInput [] [
-                input [placeholder "message here"] []
-            ]
-            ,chatSend [] [
-                button [] [ text "Send Message" ]   
+           , div [] [text "wwwww"]
+            ,chatFooter [] [
+                chatInput [] [
+                    input [placeholder "message here"] []
+                ]
+                ,chatSend [] [
+                    button [] [ text "Send Message" ]   
+                ]
             ]
         ]
         ]
