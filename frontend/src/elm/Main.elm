@@ -44,9 +44,14 @@ subscriptions model = Sub.batch [
     WebSocket.listen "ws://localhost:8081/" WSMessage
     ]
 
+videoChatElement =
+    Html.node "video-chat"
+
 -- View code goes here
 view : Model -> Html Msg
-view model = div [] [text "what is this", text model.message ]
+view model = div [] [
+    text "what is this", text model.message, videoChatElement [] [] ]
+
 
 -- Entry point
 main : Program Never Model Msg
