@@ -8,6 +8,7 @@ import Keyboard
 import WebSocket
 import Json.Decode exposing (decodeString, field, Decoder, int, string, map4, bool)
 import Json.Encode
+import ChatMessageHelper
 
 type alias ChatMessage = 
     {
