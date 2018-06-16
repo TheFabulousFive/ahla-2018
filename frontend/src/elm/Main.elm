@@ -138,7 +138,7 @@ view model =
             ,chatFeed model.messages
             ,chatFooter [] [
                 chatInput [] [
-                    input [placeholder "message here"] []
+                    input [ placeholder "message here"] []
                 ]
                 ,chatSend [] [
                     button [] [ text "Send Message" ]   
