@@ -102,7 +102,7 @@ shareIdentitySwitch attrs =
     button <| [class "semantic ui stuff"] ++ attrs
 
 chatHeader attrs =
-    div <| [class "semantic ui stuff"] ++ attrs
+    div <| [class "chat-header semantic ui stuff"] ++ attrs
 
 chatFooter attrs = 
     div <| [class "chat-footer"] ++ attrs
@@ -120,7 +120,9 @@ chatFeed messages =
                     ,p [class "chat-message-text"] [text message.text]
                 ]
     in
-        div [] <| List.map formatMessage messages
+        List.map formatMessage messages |> 
+            div [class "chat-feed"]
+        
 
 -- View code goes here
 view : Model -> Html Msg
