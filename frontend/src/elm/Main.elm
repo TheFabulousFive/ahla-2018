@@ -8,10 +8,18 @@ import Keyboard
 import WebSocket
 
 
+type alias ChatMessage = 
+    {
+        uid: String,
+        name: String,
+        text: String,
+        isPatient: Bool
+    }
+
 type alias Model =
     {
-        -- input : String
-        message: String
+        messages: List(ChatMessage),
+        message: String 
     }
 
 type Msg
@@ -24,8 +32,31 @@ type Msg
     | Messages List
     -- | MessagesFromClinicians List
 
+mockMessages = [{
+            name = "Steve", 
+            uid = "wwwww",
+            text = "I am here",
+            isPatient = True
+        }, {
+            name = "Steve", 
+            uid = "wwwww",
+            text = "I am here",
+            isPatient = True
+        },{
+            name = "Sue", 
+            uid = "wwwww",
+            text = "I am here",
+            isPatient = False
+        },
+        {
+            name = "Steve", 
+            uid = "wwwww",
+            text = "I am here",
+            isPatient = True
+        }]
+
 initState : Model 
-initState = { message = "" }
+initState = { messages = mockMessages, message = "" }
 
 init : ( Model, Cmd Msg )
 init =
@@ -76,6 +107,21 @@ chatHeader attrs =
 chatFooter attrs = 
     div <| [class "chat-footer"] ++ attrs
 
+chatFeed messages = 
+    let
+        formatMessage message = 
+            let
+                isUserPatient = case message.isPatient of
+                    True -> "user-patient"
+                    False -> "user-doctor"
+            in
+                div [class <| "chat-item " ++ isUserPatient] [
+                    span [class "chat-message-name"] [text message.name]
+                    ,p [class "chat-message-text"] [text message.text]
+                ]
+    in
+        div [] <| List.map formatMessage messages
+
 -- View code goes here
 view : Model -> Html Msg
 
@@ -87,7 +133,7 @@ view model =
             chatClose [] [text "<-"]
             ,shareIdentitySwitch [] [text "Share your Identity"]
            ]
-           , div [] [text "wwwww"]
+            ,chatFeed model.messages
             ,chatFooter [] [
                 chatInput [] [
                     input [placeholder "message here"] []
