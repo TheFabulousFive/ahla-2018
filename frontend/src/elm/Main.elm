@@ -10,6 +10,7 @@ import Json.Decode exposing (decodeString, field, Decoder, int, string, map4, bo
 
 type alias ChatMessage = 
     {
+        timestamp: Int,
         uid: String,
         name: String,
         text: String,
@@ -36,22 +37,26 @@ type Msg
 chatWSEnpoint = "ws://localhost:8000/user/"
 
 mockMessages = [{
+            timestamp = 0000000000,
             name = "Steve", 
             uid = "wwwww",
             text = "I am here",
             isPatient = True
         }, {
+            timestamp = 0000000000,
             name = "Steve", 
             uid = "wwwww",
             text = "I am here",
             isPatient = True
         },{
+            timestamp = 0000000000,
             name = "Sue", 
             uid = "wwwww",
             text = "I am here",
             isPatient = False
         },
         {
+            timestamp = 0000000000,
             name = "Steve", 
             uid = "wwwww",
             text = "I am here",
@@ -82,6 +87,7 @@ update msg model =
                 -- map2 ChatMessage (field "uid" string) (field "name" string) (field "message" string) (field "is_patient" bool)
                 resultMessage = decodeMessage <| result
                 udpatedMessageFeed = model.messages ++ [{
+                    timestamp = 0000000000,
                     name = "Sue",
                     uid = "wwwww",
                     text = resultMessage,
