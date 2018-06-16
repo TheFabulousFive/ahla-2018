@@ -3,6 +3,8 @@ from django.http import HttpResponse, JsonResponse
 from core.models import User, Conversation, Message
 from django.contrib.auth import login as _login, authenticate
 from django.db.models import Q
+import json
+from channels import Group
 
 
 def index(request):
@@ -51,6 +53,17 @@ def create_conversation(request):
             professional=professional,
             tags=tags
         )
+        try:
+            Group('users').send({
+                'text': json.dumps({
+                    'message_type': 'notification.conversation.new',
+                    'message_body': 'A new conversation is created',
+                    'data_url': reverse('user:join_conversation', kwargs={'conversation_id': conversation.pk})
+                })
+            })
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
         return JsonResponse({
             'status': True,
             'data': {
@@ -116,6 +129,19 @@ def join_conversation(request, conversation_id):
         conversation.professional = user
         conversation.save()
         conversation.activate()
+
+        try:
+            Group('users').send({
+                'text': json.dumps({
+                    'message_type': 'notification.conversation.participiant.new',
+                    'message_body': 'Someone joined conversation',
+                    'data_url': reverse('user:join_conversation', kwargs={'conversation_id': conversation.pk})
+                })
+            })
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+
         return redirect(reverse('user:serve_conversation', kwargs={'conversation_id': conversation.pk}))
 
     except AssertionError as e:
@@ -216,6 +242,18 @@ def create_message(request, conversation_id):
             user=user,
             text=text
         )
+
+        try:
+            Group('users').send({
+                'text': json.dumps({
+                    'message_type': 'notification.message.new',
+                    'message_body': 'A new message is created',
+                    'data_url': reverse('user:get_message', kwargs={'message_id': message.pk})
+                })
+            })
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
 
         return JsonResponse({
             'status': True,
