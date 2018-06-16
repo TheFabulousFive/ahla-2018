@@ -51,7 +51,7 @@ videoChatElement =
 -- View code goes here
 view : Model -> Html Msg
 view model = div [] [
-    text "what is this", text model.message, videoChatElement [] [] ]
+    text "Pluto is not a planet", text model.message, videoChatElement [] [] ]
 
 
 -- Entry point

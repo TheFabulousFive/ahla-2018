@@ -36,7 +36,7 @@ class VideoChat extends HTMLElement {
             stream.init(function(){
                 console.log("Local stream initialized");
 
-                stream.play("agora-remote");                
+              //  stream.play("agora-remote");                
                 client.publish(stream, function(err){
                     console.log("Publish stream failed", err);
                 });
@@ -47,7 +47,9 @@ class VideoChat extends HTMLElement {
                     console.log("Timestamp: " + Date.now());
                     console.log("Subscribe ", stream);
 
+
                     client.subscribe(stream, function(err) {
+                        
                         console.log("Subscribe stream failed", err);
                    });
                 });
@@ -69,6 +71,8 @@ class VideoChat extends HTMLElement {
                 console.log("Timestamp: " + Date.now());
                 console.log("Subscribe remote stream successfully: " + stream.getId());
                 console.log(evt);
+                stream.play("agora-remote");
+
             });
 
             client.on("stream-removed", function(evt) {
