@@ -15,8 +15,96 @@ Hello {{ user.username }}
                 Handle user interaction here by roles
                 <br>
                 User: {{ user.username }}
+                <br>
+                User: {{ user.role }}
             </p>
         </div>
+        {% if request.user.is_patient %}
+        <div class="sixteen wide column">
+            <button class="ui primary button initiateConversationModel"> 
+                Find Help
+            </button>
+            <script>
+                $(document).ready(function (e) {
+                    $('.initiateConversationModel').on('click', function (e) {
+                        $('.ui.modal.conversationModel').modal('show');
+                    })
+                })
+
+                // // set csrf header
+                // $.ajaxSetup({
+                //     beforeSend: function (xhr, settings) {
+                //         if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                //             xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                //         }
+                //     }
+                // });
+
+                function createConversation() {
+                    var form = $('.conversationModelForm');
+                    var errorElem = $('.conversationCreateFormError')
+                    errorElem.hide()
+                    var errorMessageDiv = $('.conversationCreateFormError p')
+                    console.log(form.serialize())
+                    $.ajax({
+                        type: "POST",
+                        url: "{% url 'user:create_conversation' %}",
+                        data: form.serialize(),
+                        // dataType: "text",
+                        success: function (resultData) {
+                            console.log("Save Complete", resultData);
+                            if (!resultData.status){
+                                errorMessageDiv.html(resultData.error);
+                                errorElem.show();
+                                return
+                            }
+                            window.location.href = resultData.data.url;
+                        }
+                    }).done(function (e) {
+                        $('.ui.modal.conversationModel').modal('show');
+                    });
+                }
+            </script>
+
+            <div class="ui modal conversationModel">
+                <i class="close icon"></i>
+                <div class="header">
+                    Please tell us what you want to talk about
+                </div>
+                <div class="content">
+                    <div class="ui conversationCreateFormError error message" style="display: none">
+                        <p class="">You can always see me</p>
+                    </div>
+                    <form action="" class="ui form conversationModelForm" onsubmit="javascript:void(0)">
+                        {% csrf_token %}
+                        <div class="field">
+                            <label for="">Please tell us what you want to talk about</label>
+                            <input type="text" name="title" placeholder="tite">
+
+                        </div>
+                        <div class="field">
+                            <label for="">Help us find the right person with some tags</label>
+                            <input type="text" name="tags" placeholder="tags">
+                        </div>
+                    </form>
+
+                </div>
+                <div class="actions">
+                    <div class="ui black deny button">
+                        Cancel
+                    </div>
+                    <div onclick="createConversation()" class="ui positive right labeled icon button">
+                        Create
+                        <i class="checkmark icon"></i>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        user is a patient
+        {% endif %}
+
+
         <script src="https://cdn.agora.io/sdk/web/AgoraRTCSDK-2.3.1.js"></script> 
         <script src="/static/dist/bundle.js"></script>
         <script>

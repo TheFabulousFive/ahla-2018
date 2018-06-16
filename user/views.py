@@ -1,7 +1,8 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from core.models import User
+from django.shortcuts import render, redirect, reverse
+from django.http import HttpResponse, JsonResponse
+from core.models import User, Conversation
 from django.contrib.auth import login as _login, authenticate
+
 
 
 def index(request):
@@ -15,9 +16,7 @@ def login(request):
 
 def do_login(request):
     try:
-        from pprint import pprint
         post = request.POST
-        pprint(post )
         username = post.get('username', None)
         password = post.get('password', None)
         assert username and password, "Username and password must be provided."
@@ -32,3 +31,47 @@ def do_login(request):
     except AssertionError as e:
         return HttpResponse(str(e))
 
+
+def create_conversation(request):
+    try:
+        post = request.POST
+        user = request.user
+        title = post.get('title', None)
+        tags = post.get('tags', None)
+
+        assert title and tags, "Please provide a title and tags for this conversation."
+        tags = ', '.join(tags.split(' '))
+        patient = None
+        professional = None
+        if user.is_patient():
+            patient = user
+        conversation = Conversation.objects.create(
+            title=title,
+            patient=patient,
+            professional=professional,
+            tags=tags
+        )
+        return JsonResponse({
+            'status': True,
+            'data': {
+                'id': conversation.pk.__str__(),
+                'url': reverse('user:serve_conversation', kwargs={'conversation_id': conversation.pk})
+            },
+            'error': None
+        })
+
+    except AssertionError as e:
+        return JsonResponse({
+            'status': False,
+            'error': str(e)
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            'status': False,
+            'error': str(e)
+        })
+
+
+def serve_conversation(request, conversation_id):
+    return HttpResponse('Hello %s' % conversation_id)
