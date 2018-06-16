@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Hello {{ user.username }}
+{% endblock title %}
+
+{% block content %}
+<div class="ui grid">
+    <div class="row">
+        <div class="sixteen wide fluid column">
+            <h3>
+                Messages
+            </h3>
+            <div class="ui relaxed divided list">
+                {% if conversations %}
+                    {% for conversation in conversations %}
+                        <div class="item">
+                            <i class="large message middle aligned icon"></i>
+                            <div class="content">
+                                <a class="header">{{ conversation.title }}</a>
+                                    {% if conversation.patient %}
+                                        <div class="description">
+                                            <i class="user icon"></i>
+                                            <span>{{ conversation.patient_penname }}</span>
+                                        </div>
+                                        <div class="description">Preferred Language: {{ conversation.patient.language}}</div>
+                                    {% endif %}
+                                    {% if conversation.professional %}
+                                        <div class="description">
+                                            <i class="user icon"></i>
+                                            <span>{{ conversation.professional_penname }}</span>
+                                        </div>
+
+                                    {% endif %}
+                                    <div class="description">
+                                        {% if request.user.is_professional %}
+                                            {% if conversation.status == 'pending' and not conversation.professional %}
+                                                <a href="{% url 'user:join_conversation' conversation_id=conversation.pk %}" class="ui tiny green secondary button">JOIN</a>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                    <div class="description">{{ conversation.tags }}</div>
+
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                {% if request.user.is_patient %}
+                    <div class="item">
+                        <i class="large red heart middle aligned icon"></i>
+                        <div class="content">
+                            {% include 'partial_user_create_conversation.html' %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

@@ -31,6 +31,7 @@ class User(AbstractBaseUser, GenericBaseClass, PermissionsMixin):
 
     username = models.CharField(max_length=20, unique=True)
     role = models.CharField(choices=USER_ROLE_CHOICES, default='patient', max_length=20)
+    language = models.CharField(max_length=50, default='English', null=False)
 
     def is_professional(self):
         return self.role == 'professional'
@@ -66,6 +67,8 @@ class Conversation(GenericBaseClass):
     title = models.CharField(max_length=300, null=False, blank=True)
     tags = models.CharField(max_length=500, null=False, blank=True)
     is_patient_anonymous = models.BooleanField(default=True, null=False)
+    status = models.CharField(choices=STATUS_OPTIONS, max_length=20, default='pending')
+
 
     def activate(self):
         self.status = 'active'

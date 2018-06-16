@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, JsonResponse
 from core.models import User, Conversation
 from django.contrib.auth import login as _login, authenticate
-
+from django.db.models import Q
 
 
 def index(request):
@@ -75,3 +75,37 @@ def create_conversation(request):
 
 def serve_conversation(request, conversation_id):
     return HttpResponse('Hello %s' % conversation_id)
+
+
+def user_messages(request):
+    user = request.user
+
+    if user.is_patient():
+        conversations = Conversation.objects.filter(Q(patient=user) | Q(professional=user)).all()
+    else:
+        conversations = Conversation.objects.filter(Q(professional=user) | Q(status='pending')).all()
+
+    return render(request, 'user_messages.html', {'conversations': conversations})
+
+
+def join_conversation(request, conversation_id):
+    try:
+
+        user = request.user
+        assert user.is_professional(), "You must be a validated professional."
+        conversation = Conversation.objects.get(pk=conversation_id)
+        assert conversation.status not in ['closed', 'active', 'suspended']
+        conversation.professional = user
+        conversation.save()
+        conversation.activate()
+        return redirect(reverse('user:serve_conversation', kwargs={'conversation_id': conversation.pk}))
+
+    except AssertionError as e:
+        import traceback
+        traceback.print_exc()
+        return HttpResponse(str(e))
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return HttpResponse(str(e))
