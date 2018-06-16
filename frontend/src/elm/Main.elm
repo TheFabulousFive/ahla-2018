@@ -2,6 +2,8 @@ module Main exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (class)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onInput)
 import Keyboard
 import WebSocket
 
@@ -55,9 +57,16 @@ view : Model -> Html Msg
 
 view model = 
     appContainer [] [
-         text "Pluto is not a planet"
+        text "Pluto is not a planet"
         ,text model.message
         ,videoChatElement [] []
+        -- -- User Info
+        -- ,input [ placeholder "User name", onInput Username ] []
+        -- ,[ button [ onClick Decrement ] [ text "Share Current Location" ]
+        -- ,ul [class "users-near"]
+        --     [ li [] [text "Talking"]
+        --     , li [] [text "Listening"]
+        --     ]
     ]
 
 -- Entry point
