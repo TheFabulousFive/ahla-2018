@@ -20,8 +20,8 @@ class VideoChat extends HTMLElement {
         this.appendChild(container);
 
         var client = this.client;
-
-        client.join(null, "webtest", undefined, function(uid){
+        console.log('NAME',  "webtwwwwwwest")
+        client.join(null, "webtwwwwwwest", undefined, function(uid){
             console.log("User " + uid + " join channel successfully");
             console.log("Timestamp: " + Date.now());
             
@@ -36,7 +36,7 @@ class VideoChat extends HTMLElement {
             stream.init(function(){
                 console.log("Local stream initialized");
 
-              //  stream.play("agora-remote");                
+                stream.play("agora-remote");                
                 client.publish(stream, function(err){
                     console.log("Publish stream failed", err);
                 });

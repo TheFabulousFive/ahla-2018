@@ -55,7 +55,7 @@ view : Model -> Html Msg
 
 view model = 
     appContainer [] [
-         text "Pluto is not a planet"
+         text "What is the thing go on here"
         ,text model.message
         ,videoChatElement [] []
     ]

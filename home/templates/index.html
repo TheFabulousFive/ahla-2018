@@ -1,5 +1,14 @@
+<!DOCTYPE html>
 <html>
+<head>
+    <title>Protea</title>
+    <script src="https://cdn.agora.io/sdk/web/AgoraRTCSDK-2.3.1.js"></script> 
+
+</head>
 <body>
+
+<div id="main"></div>
+<script src="/static/dist/bundle.js"></script>
 <script>
     var socket  = new WebSocket('ws://'+ window.location.host + '/user/');
     socket.onopen = function open() {
@@ -13,5 +22,6 @@
         }));
     }
 </script>
+
 </body>
 </html>
