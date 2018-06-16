@@ -85,3 +85,16 @@ class Conversation(GenericBaseClass):
     def close(self):
         self.status = 'closed'
         self.save()
+
+
+class Message(GenericBaseClass):
+    MESSAGE_STATUS_CHOICES = (
+        ('active', 'Active'),
+        ('suspended', 'Suspended'),
+    )
+
+    conversation = models.ForeignKey(Conversation)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    text = models.TextField(null=False, blank=True)
+    status = models.CharField(choices=MESSAGE_STATUS_CHOICES, default='active', null=False, max_length=30)
+

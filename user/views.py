@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, JsonResponse
-from core.models import User, Conversation
+from core.models import User, Conversation, Message
 from django.contrib.auth import login as _login, authenticate
 from django.db.models import Q
 
@@ -109,3 +109,116 @@ def join_conversation(request, conversation_id):
         import traceback
         traceback.print_exc()
         return HttpResponse(str(e))
+
+
+def get_conversation_messages(request, conversation_id):
+    try:
+        user = request.user
+        conversation = Conversation.objects.get(pk=conversation_id)
+        assert str(user.pk) in [str(conversation.patient.pk), str(conversation.professional.pk)], \
+            "You are not part of this conversation"
+
+        messages = [{
+            'id': message.pk.__str__(),
+            'text': message.text,
+            'username': message.user.username if message.user.is_professional() else conversation.patient_penname,
+            'created_at': message.created_at.timestamp(),
+            'is_patient': message.user.is_patient()
+        } for message in conversation.message_set.all()]
+
+        return JsonResponse({
+            'status': True,
+            'data': {
+                'id': conversation.pk.__str__(),
+                'title': conversation.title,
+                'tags': conversation.tags,
+                'messages': messages
+            },
+            'error': None
+        })
+
+    except AssertionError as e:
+        return JsonResponse({
+            'status': False,
+            'error': str(e)
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            'status': False,
+            'error': str(e)
+        })
+
+
+def get_message(request, message_id):
+    try:
+        user = request.user
+        message = Message.objects.get(pk=message_id)
+        conversation = message.conversation
+        assert str(user.pk) in [str(conversation.patient.pk), str(conversation.professional.pk)], \
+            "You are not part of this conversation"
+
+        return JsonResponse({
+            'status': True,
+            'data': {
+                'id': message.pk.__str__(),
+                'text': message.text,
+                'username': message.user.username if message.user.is_professional() else conversation.patient_penname,
+                'created_at': message.created_at.timestamp(),
+                'is_patient': message.user.is_patient()
+            },
+            'error': None
+        })
+
+    except AssertionError as e:
+        return JsonResponse({
+            'status': False,
+            'error': str(e)
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            'status': False,
+            'error': str(e)
+        })
+
+
+def create_message(request, conversation_id):
+    try:
+        user = request.user
+        conversation = Conversation.objects.get(pk=conversation_id)
+        assert str(user.pk) in [str(conversation.patient.pk), str(conversation.professional.pk)], \
+            "You are not part of this conversation"
+
+        post = request.POST
+        text = post.get('text')
+        assert text, 'Empty message'
+        message = Message.objects.create(
+            conversation=conversation,
+            user=user,
+            text=text
+        )
+
+        return JsonResponse({
+            'status': True,
+            'data': {
+                'id': message.pk.__str__(),
+                'text': message.text,
+                'username': message.user.username if message.user.is_professional() else conversation.patient_penname,
+                'created_at': message.created_at.timestamp(),
+                'is_patient': message.user.is_patient()
+            },
+            'error': None
+        })
+
+    except AssertionError as e:
+        return JsonResponse({
+            'status': False,
+            'error': str(e)
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            'status': False,
+            'error': str(e)
+        })
