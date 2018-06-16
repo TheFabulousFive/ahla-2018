@@ -5,12 +5,13 @@
   "main": "webpack.config.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "webpack-serve --watch ./webpack.config.js --port 9001 --hot --open"
+    "serve": "webpack-serve --watch ./webpack.config.js --port 9001 --hot --open --address 0.0.0.0"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.49",
+    "@babel/preset-env": "^7.0.0-beta.51",
     "babel-loader": "^8.0.0-beta.3",
     "babel-preset-env": "^1.7.0",
     "css-loader": "^0.28.11",
@@ -22,5 +23,8 @@
     "webpack": "^4.11.0",
     "webpack-cli": "^3.0.2",
     "webpack-serve": "^1.0.2"
+  },
+  "dependencies": {
+    "agora-rtc-sdk": "^2.3.1"
   }
 }
