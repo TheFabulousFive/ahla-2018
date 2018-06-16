@@ -1,3 +1,5 @@
+import AgoraRTC from 'agora-rtc-sdk';
+
 import Elm from './elm/Main.elm';
 import agora from './agora.js';
 
