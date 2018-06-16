@@ -42,7 +42,8 @@ INSTALLED_APPS = [
 INSTALLED_APPS += [
     'channels',
     'core',
-    'home'
+    'home',
+    'user',
 ]
 #Static Files
 STATICFILES_DIRS = [
@@ -140,3 +141,5 @@ CHANNEL_LAYERS = {
         'ROUTING': 'core.routing.channel_routing',
     }
 }
+
+AUTH_USER_MODEL = 'core.User'

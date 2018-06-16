@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Hello {{ user.username }}
+{% endblock title %}
+
+{% block content %}
+<div class="ui grid">
+    <div class="row">
+        <div class="sixteen wide fluid column">
+            <h3>
+                This is your user dashboard
+            </h3>
+            <p>
+                Handle user interaction here by roles
+                <br>
+                User: {{ user.username }}
+            </p>
+        </div>
+        <script src="https://cdn.agora.io/sdk/web/AgoraRTCSDK-2.3.1.js"></script> 
+        <script src="/static/dist/bundle.js"></script>
+        <script>
+            var socket = new WebSocket('ws://' + window.location.host + '/user/');
+            socket.onopen = function open() {
+                console.log('WebSockets connection created.');
+            };
+
+            if (socket.readyState == WebSocket.OPEN) {
+                socket.onopen();
+                socket.send(JSON.stringify({
+                    message: "yolo check me out in the WS frames "
+                }));
+            }
+        </script>
+
+    </div>
+
+</div>
+{% endblock %}

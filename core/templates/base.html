@@ -5,15 +5,43 @@
     <title>{% block title %}{% endblock title %}</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <script src="/static/semantic-ui/semantic.min.js"></script>
-
     <link rel="stylesheet" href="/static/semantic-ui/semantic.min.css"/>
 
 
 </head>
-<body >
+<body>
 
 
 
+
+<div class="ui container">
+    <header>
+        <div class="ui secondary  menu">
+            <a class="active item">
+                Home
+            </a>
+            <a class="item">
+                Messages
+            </a>
+
+            <div class="right menu">
+                {% if request.user.is_authenticated %}
+                <a class="ui item">
+                    Logout
+                </a>
+                {% else %}
+                <a class="ui item" href="{% url 'user:login' %}">
+                    Register
+                </a>
+                <a class="ui item" href="{% url 'user:login' %}">
+                    Login
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+</div>
+<br>
 <div class="ui container">
     {% block content %}
     {% endblock content %}
