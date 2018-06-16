@@ -7,6 +7,7 @@ import Html.Events exposing (onInput, onClick)
 import Keyboard
 import WebSocket
 import Json.Decode exposing (decodeString, field, Decoder, int, string, map4, bool)
+import Json.Encode
 
 type alias ChatMessage = 
     {
@@ -30,7 +31,7 @@ type Msg
     | KeyMsg Keyboard.KeyCode
     | MouseMovement Int Int
     | WSMessage String
-    | SendChatMessage String
+    | SendChatMessage
     | Input String
     | Messages List
     | OnMessageTextInput String
@@ -75,9 +76,21 @@ init =
 -- Messages = [ [ "Hi", "I need help", "I'm sad", "My dog died"], ["oh wow"]]
 
 decodeMessage m = 
+    -- map2 ChatMessage (field "uid" string) (field "name" string) (field "message" string) (field "is_patient" bool)
     case m of 
         Ok s -> s
         Err err -> ":("
+
+encodeChatMessage uid message =
+    let 
+        chatEncoder = 
+            Json.Encode.object
+                [
+                    ("uid", Json.Encode.string uid),
+                    ("message", Json.Encode.string message)
+                ]
+    in
+        Json.Encode.encode 0 chatEncoder        
 
 -- Model updates here
 update : Msg -> Model -> ( Model, Cmd msg )
@@ -88,7 +101,6 @@ update msg model =
         WSMessage ws_msg ->
             let
                 result = decodeString (field "message" string) ws_msg
-                -- map2 ChatMessage (field "uid" string) (field "name" string) (field "message" string) (field "is_patient" bool)
                 resultMessage = decodeMessage <| result
                 udpatedMessageFeed = model.messages ++ [{
                     timestamp = 0000000000,
@@ -99,8 +111,12 @@ update msg model =
                 }]
             in
                 ( { model | message = resultMessage, messages = udpatedMessageFeed} , Cmd.none )
-        SendChatMessage chatMessage ->
-            ( { model | currentMessageBuffer = "" }, WebSocket.send chatWSEnpoint chatMessage)
+        SendChatMessage ->
+            let
+                messageJSON = 
+                    encodeChatMessage "0000" model.currentMessageBuffer
+            in
+                ( { model | currentMessageBuffer = "" }, WebSocket.send chatWSEnpoint messageJSON)
         _ ->
             ( model, Cmd.none )
 
@@ -153,7 +169,6 @@ chatFeed messages =
     in
         List.map formatMessage messages |> 
             div [class "chat-feed"]
-        
 
 -- View code goes here
 view : Model -> Html Msg
@@ -174,7 +189,7 @@ view model =
                         placeholder "Enter message here"] []
                 ]
                 ,chatSend [] [
-                    button [onClick <| SendChatMessage "ww"] [ text "Send Message" ]   
+                    button [onClick <| SendChatMessage] [ text "Send Message" ]   
                 ]
             ]
         ]
