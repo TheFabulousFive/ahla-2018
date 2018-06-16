@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Hello {{ conversation.title }}
+{% endblock title %}
+
+{% block content %}
+<div class="ui grid">
+    <div class="row">
+        <div class="sixteen wide fluid column">
+            <h3>
+                {{ conversation.title }}
+            </h3>
+            <p>
+                {{ conversation.tags }}
+                <br>
+                People: {{ conversation.professional.username }} and
+                {{ conversation.patient_penname }}
+
+            </p>
+        </div>
+        <script>
+            var conversation_id = "{{ conversation.pk }}";
+        </script>
+
+    </div>
+
+</div>
+{% endblock %}

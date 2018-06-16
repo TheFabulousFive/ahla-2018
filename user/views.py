@@ -74,7 +74,24 @@ def create_conversation(request):
 
 
 def serve_conversation(request, conversation_id):
-    return HttpResponse('Hello %s' % conversation_id)
+    try:
+
+        user = request.user
+        conversation = Conversation.objects.get(pk=conversation_id)
+        assert str(user.pk) in [str(conversation.patient.pk), str(conversation.professional.pk)], \
+            "You are not part of this conversation"
+
+        return render(request, 'user_conversation.html', {'conversation': conversation})
+
+    except AssertionError as e:
+        import traceback
+        traceback.print_exc()
+        return HttpResponse(str(e))
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return HttpResponse(str(e))
 
 
 def user_messages(request):
