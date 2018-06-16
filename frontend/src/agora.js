@@ -36,6 +36,7 @@ class VideoChat extends HTMLElement {
             stream.setVideoProfile("480p_4");
             stream.init(function(){
                 console.log("Local stream initialized");       
+                var localStream = stream;
                 client.publish(stream, function(err){
                     console.log("Publish stream failed", err);
                 });
@@ -45,10 +46,12 @@ class VideoChat extends HTMLElement {
                     console.log("New stream added: " + stream.getId());
                     console.log("Timestamp: " + Date.now());
                     console.log("Subscribe ", stream);
+                    
+                    client.publish(localStream, function(err){
+                        console.log("Publish stream failed", err);
+                    });
 
-
-                    client.subscribe(stream, function(err) {
-                        
+                    client.subscribe(stream, function(err) {                        
                         console.log("Subscribe stream failed", err);
                    });
                 });
