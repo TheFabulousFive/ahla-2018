@@ -1,6 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (..)
+import Html.Attributes exposing (class)
 import Keyboard
 import WebSocket
 
@@ -41,14 +42,23 @@ subscriptions model = Sub.batch [
     WebSocket.listen "ws://localhost:8000/" WSMessage
     ]
 
+videoChatElement : List (Attribute msg) -> List (Html msg) -> Html msg
+videoChatElement =
+    Html.node "video-chat"
+    
+appContainer attrs =
+    div <| [class "protea-app-wrapper"] ++ attrs
+
+
 -- View code goes here
 view : Model -> Html Msg
-view model = div [] [ text "what is this", text model.message ]
-    -- div []
-    --     [ input [onInput Input, value model.input] []
-    -- , button [onClick Send] [text "Send"]
-    -- , div [] (List.map viewMessage (List.reverse model.messages))
-    -- ]
+
+view model = 
+    appContainer [] [
+         text "Pluto is not a planet"
+        ,text model.message
+        ,videoChatElement [] []
+    ]
 
 -- Entry point
 main : Program Never Model Msg
