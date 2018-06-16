@@ -58,7 +58,7 @@ view : Model -> Html Msg
 view model = 
     appContainer [] [
         text "Pluto is not a planet"
-        ,text model.message
+       ,text model.message
         ,videoChatElement [] []
         -- -- User Info
         -- ,input [ placeholder "User name", onInput Username ] []
