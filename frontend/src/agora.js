@@ -81,7 +81,7 @@ class VideoChat extends HTMLElement {
 
                 if(stream.getId() !== uid) {
                     stream.play("agora-remote");
-q
+                }
             });
 
             client.on("stream-removed", function(evt) {
