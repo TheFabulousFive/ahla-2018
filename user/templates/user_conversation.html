@@ -8,16 +8,31 @@ Hello {{ conversation.title }}
 <div class="ui grid">
     <div class="row">
         <div class="sixteen wide fluid column">
-            <h3>
-                {{ conversation.title }}
-            </h3>
-            <p>
-                {{ conversation.tags }}
-                <br>
-                People: {{ conversation.professional.username }} and
-                {{ conversation.patient_penname }}
+            <h2>Welcome back, {{ conversation.patient_penname }}</h2>
+            <table class="ui celled padded table">
+                <thead>
+                    <tr>
+                        <th class="single line">Conversation Name</th>
+                        <th>Tags</th>
+                        <th>Helper Name</th>
 
-            </p>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <h2>{{ conversation.title }}</h2>
+                        </td>
+                        <td class="single line">
+                            <a class="ui teal image label">{{ conversation.tags }}</a>
+                        </td>
+                        <td>
+                        {{ conversation.professional.username }}
+                        </td>
+         
+                    </tr>
+                </tbody>
+            </table>
         </div>
         <script>
             var conversation_id = "{{ conversation.pk }}";

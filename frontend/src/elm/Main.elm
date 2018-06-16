@@ -131,28 +131,28 @@ videoChatElement =
     Html.node "video-chat"
     
 appContainer attrs =
-    div <| [class "protea-app-wrapper"] ++ attrs
+    div <| [class "ui card"] ++ attrs
 -- Chat
 chatContainer attrs =
-    div <| [class "chat-container semantic ui stuff"] ++ attrs
+    div <| [class "content"] ++ attrs
 
 chatClose attrs =
-    div <| [class "semantic ui stuff"] ++ attrs
+    div <| [class "window close icon"] ++ attrs
 
 chatInput attrs =
     div <| [class "semantic ui stuff"] ++ attrs
 
 chatSend attrs =
-    button <| [class "semantic ui stuff"] ++ attrs
+    button <| [class "ui right labeled icon button"] ++ attrs
 
 shareIdentitySwitch attrs =
-    button <| [class "semantic ui stuff"] ++ attrs
+    button <| [class "ui slider checkbox"] ++ attrs
 
 chatHeader attrs =
-    div <| [class "chat-header semantic ui stuff"] ++ attrs
+    div <| [class "chat-header header"] ++ attrs
 
 chatFooter attrs = 
-    div <| [class "chat-footer"] ++ attrs
+    div <| [class "chat-footer footer"] ++ attrs
 
 chatFeed messages = 
     let
