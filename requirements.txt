@@ -1,2 +1,4 @@
 Django==1.11
 pytz==2018.4
+channels==1.1.8
+asgi_redis==1.4.3
