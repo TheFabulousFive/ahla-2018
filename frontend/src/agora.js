@@ -6,6 +6,18 @@ class VideoChat extends HTMLElement {
     connectedCallback() {
         console.log('I am born rendered');
     }
+
+    disconnectedCallback() {
+
+    }
+
+    attributeChangedCallback(attrName, oldVal, newVal) {
+
+    }
+
+    adoptedCallback() {
+        
+    }
 }
 
 export default {
