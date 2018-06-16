@@ -36,6 +36,7 @@ class VideoChat extends HTMLElement {
             stream.init(function(){
                 console.log("Local stream initialized");
 
+                stream.play("agora-remote");                
                 client.publish(stream, function(err){
                     console.log("Publish stream failed", err);
                     console.log('I AM THE STREAM', stream);
@@ -50,8 +51,6 @@ class VideoChat extends HTMLElement {
                     client.subscribe(stream, function(err) {
                         console.log("Subscribe stream failed", err);
                    });
-
-                   stream.play("agora-remote");                
                 });
    
             });
