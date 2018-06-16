@@ -55,7 +55,7 @@ def create_conversation(request):
             'status': True,
             'data': {
                 'id': conversation.pk.__str__(),
-                'url': reverse('user:serve_conversation', kwargs={'conversation_id': conversation.pk})
+                'url': reverse('user:join_conversation', kwargs={'conversation_id': conversation.pk})
             },
             'error': None
         })
@@ -109,8 +109,9 @@ def join_conversation(request, conversation_id):
     try:
 
         user = request.user
-        assert user.is_professional(), "You must be a validated professional."
         conversation = Conversation.objects.get(pk=conversation_id)
+        if str(conversation.patient.pk) != str(user.pk):
+            assert user.is_professional(), "You must be a validated professional."
         assert conversation.status not in ['closed', 'active', 'suspended']
         conversation.professional = user
         conversation.save()
