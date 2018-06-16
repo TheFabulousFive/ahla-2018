@@ -1,8 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (..)
-import Html.Attributes exposing (class)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class, attribute)
 import Html.Events exposing (onInput)
 import Keyboard
 import WebSocket
@@ -51,15 +50,16 @@ videoChatElement =
 appContainer attrs =
     div <| [class "protea-app-wrapper"] ++ attrs
 
+roomID = attribute "room"
 
 -- View code goes here
 view : Model -> Html Msg
 
 view model = 
     appContainer [] [
-        text "Pluto is not a planet"
+        text "This is a test"
        ,text model.message
-        ,videoChatElement [] []
+        ,videoChatElement [roomID "webtest"] []
         -- -- User Info
         -- ,input [ placeholder "User name", onInput Username ] []
         -- ,[ button [ onClick Decrement ] [ text "Share Current Location" ]

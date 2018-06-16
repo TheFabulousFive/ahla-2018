@@ -2,7 +2,6 @@ class VideoChat extends HTMLElement {
     constructor () {
         super();
         this.client = AgoraRTC.createClient({mode:'interop'});
-
         var client = this.client;
         var appid = '3e3e005a3ec343bca61e9792f414eb0c';
 
@@ -13,6 +12,8 @@ class VideoChat extends HTMLElement {
 
     connectedCallback() {
         console.log('I am born rendered');
+        this.roomID = this.getAttribute('room');
+                
         var container = document.createElement('div');
         container.setAttribute('id', 'agora-remote');
         container.style.width = '500px';
@@ -20,8 +21,8 @@ class VideoChat extends HTMLElement {
         this.appendChild(container);
 
         var client = this.client;
-        console.log('NAME',  "webtwwwwwwest")
-        client.join(null, "webtwwwwwwest", undefined, function(uid){
+        console.log('I am the room', this.roomID);
+        client.join(null, this.roomID, undefined, function(uid){
             console.log("User " + uid + " join channel successfully");
             console.log("Timestamp: " + Date.now());
             
@@ -35,7 +36,6 @@ class VideoChat extends HTMLElement {
             stream.setVideoProfile("480p_4");
             stream.init(function(){
                 console.log("Local stream initialized");
-
                 stream.play("agora-remote");                
                 client.publish(stream, function(err){
                     console.log("Publish stream failed", err);
@@ -60,6 +60,8 @@ class VideoChat extends HTMLElement {
                 console.log("Peer has left: " + evt.uid);
                 console.log("Timestamp: " + Date.now());
                 console.log(evt);
+                var stream = evt.stream;
+                stream.stop();
             });
             
             /*
@@ -76,10 +78,12 @@ class VideoChat extends HTMLElement {
             });
 
             client.on("stream-removed", function(evt) {
+                console.log('STREEEEAMED REMVOED');
                 var stream = evt.stream;
                 console.log("Stream removed: " + evt.stream.getId());
                 console.log("Timestamp: " + Date.now());
                 console.log(evt);
+                stream.stop("agora-remote");
             });
         });   
 
