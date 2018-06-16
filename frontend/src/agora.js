@@ -39,7 +39,6 @@ class VideoChat extends HTMLElement {
                 stream.play("agora-remote");                
                 client.publish(stream, function(err){
                     console.log("Publish stream failed", err);
-                    console.log('I AM THE STREAM', stream);
                 });
 
                 client.on('stream-added', function(evt) {

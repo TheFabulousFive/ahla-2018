@@ -44,6 +44,7 @@ subscriptions model = Sub.batch [
     WebSocket.listen "ws://localhost:8081/" WSMessage
     ]
 
+videoChatElement : List (Attribute msg) -> List (Html msg) -> Html msg
 videoChatElement =
     Html.node "video-chat"
 

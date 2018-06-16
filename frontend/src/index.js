@@ -9,7 +9,6 @@ import './scss/style.scss'
 customElements.define('video-chat', agora.VideoChat);
 
 window.onload = function () {
-
 	var node = document.getElementById('main');
 	var app = Elm.Main.embed(node);
 }
