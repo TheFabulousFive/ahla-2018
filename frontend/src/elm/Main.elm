@@ -6,7 +6,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 import Keyboard
 import WebSocket
-
+import Json.Decode exposing (decodeString, field, Decoder, int, string)
 
 type alias ChatMessage = 
     {
@@ -64,19 +64,34 @@ init =
     
 -- Messages = [ [ "Hi", "I need help", "I'm sad", "My dog died"], ["oh wow"]]
 
+decodeMessage m = 
+    case m of 
+        Ok s -> s
+        Err err -> ":("
+
 -- Model updates here
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg model = 
     case msg of
         WSMessage ws_msg ->
-            ( { model | message = ws_msg } , Cmd.none )
+            let
+                result = decodeString (field "message" string) ws_msg
+                resultMessage = decodeMessage <| result
+                udpatedMessageFeed = model.messages ++ [{
+                    name = "Sue",
+                    uid = "wwwww",
+                    text = resultMessage,
+                    isPatient = False
+                }]
+            in
+                ( { model | message = resultMessage, messages = udpatedMessageFeed} , Cmd.none )
         _ ->
             ( model, Cmd.none )
 
 -- Put websockets subscriotions here
 subscriptions : Model -> Sub Msg
 subscriptions model = Sub.batch [
-    WebSocket.listen "ws://localhost:8000/" WSMessage
+    WebSocket.listen "ws://localhost:8000/user/" WSMessage
     ]
 
 videoChatElement : List (Attribute msg) -> List (Html msg) -> Html msg
@@ -132,7 +147,7 @@ view model =
         
        chatContainer [] [
            chatHeader[] [
-            chatClose [] [text "<-"]
+            chatClose [] [text "<-", text model.message]
             ,shareIdentitySwitch [] [text "Share your Identity"]
            ]
             ,chatFeed model.messages
