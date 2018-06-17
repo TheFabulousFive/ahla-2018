@@ -15,8 +15,15 @@ Hello {{ user.username }}
                 Handle user interaction here by roles
                 <br>
                 User: {{ user.username }}
+                <br>
+                User: {{ user.role }}
             </p>
         </div>
+        <div class="sixteen wide fluid column">
+            {% include 'partial_user_create_conversation.html' %}
+        </div>
+
+
         <script src="https://cdn.agora.io/sdk/web/AgoraRTCSDK-2.3.1.js"></script> 
         <script src="/static/dist/bundle.js"></script>
         <script>

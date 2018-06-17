@@ -1,8 +1,7 @@
 class VideoChat extends HTMLElement {
     constructor () {
         super();
-        this.client = AgoraRTC.createClient({mode:'interop'});
-
+        this.client = AgoraRTC.createClient({mode:'rtc'});
         var client = this.client;
         var appid = '3e3e005a3ec343bca61e9792f414eb0c';
 
@@ -13,6 +12,8 @@ class VideoChat extends HTMLElement {
 
     connectedCallback() {
         console.log('I am born rendered');
+        this.roomID = this.getAttribute('room');
+                
         var container = document.createElement('div');
         container.setAttribute('id', 'agora-remote');
         container.style.width = '500px';
@@ -20,10 +21,13 @@ class VideoChat extends HTMLElement {
         this.appendChild(container);
 
         var client = this.client;
-        console.log('NAME',  "webtwwwwwwest")
-        client.join(null, "webtwwwwwwest", undefined, function(uid){
+        console.log('I am the room', this.roomID);
+
+        client.join(null, this.roomID, undefined, function(uid){
             console.log("User " + uid + " join channel successfully");
             console.log("Timestamp: " + Date.now());
+
+            console.log('I am the STATS', client);
             
             var stream = AgoraRTC.createStream({
                 streamID: uid,
@@ -34,9 +38,8 @@ class VideoChat extends HTMLElement {
 
             stream.setVideoProfile("480p_4");
             stream.init(function(){
-                console.log("Local stream initialized");
-
-                stream.play("agora-remote");                
+                console.log("Local stream initialized");       
+                var localStream = stream;
                 client.publish(stream, function(err){
                     console.log("Publish stream failed", err);
                 });
@@ -46,10 +49,12 @@ class VideoChat extends HTMLElement {
                     console.log("New stream added: " + stream.getId());
                     console.log("Timestamp: " + Date.now());
                     console.log("Subscribe ", stream);
+                    
+                    client.publish(stream, function(err){
+                        console.log("Publish stream failed", err);
+                    });
 
-
-                    client.subscribe(stream, function(err) {
-                        
+                    client.subscribe(stream, function(err) {                        
                         console.log("Subscribe stream failed", err);
                    });
                 });
@@ -60,6 +65,8 @@ class VideoChat extends HTMLElement {
                 console.log("Peer has left: " + evt.uid);
                 console.log("Timestamp: " + Date.now());
                 console.log(evt);
+                var stream = evt.stream;
+                stream.stop();
             });
             
             /*
@@ -69,17 +76,20 @@ class VideoChat extends HTMLElement {
                 var stream = evt.stream;
                 console.log("Got stream-subscribed event");
                 console.log("Timestamp: " + Date.now());
-                console.log("Subscribe remote stream successfully: " + stream.getId());
+                console.log("Subscribe remote stream successfully: " + stream.getId(), uid);
                 console.log(evt);
-                stream.play("agora-remote");
 
+                if(stream.getId() !== uid) {
+                    stream.play("agora-remote");
+                }
             });
 
             client.on("stream-removed", function(evt) {
                 var stream = evt.stream;
-                console.log("Stream removed: " + evt.stream.getId());
+                console.log("Stream removed: " + evt.scream.getId());
                 console.log("Timestamp: " + Date.now());
                 console.log(evt);
+                stream.stop("agora-remote");
             });
         });   
 
