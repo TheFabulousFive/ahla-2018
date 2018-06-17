@@ -17,14 +17,14 @@
 <div class="ui container">
     <header>
         <div class="ui secondary  menu">
-            <a class="active item">
+            <!-- <a class="active item">
                 Home
-            </a>
+            </a> -->
 
-            <div class="right menu">
+            <div class="right red menu">
                 {% if request.user.is_authenticated %}
                 <a class="item" href="{% url 'user:messages' %}">
-                    Messages
+                    Account
                 </a>
                 <a class="ui item">
                     Logout

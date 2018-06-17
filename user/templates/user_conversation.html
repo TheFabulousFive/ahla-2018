@@ -8,14 +8,13 @@ Hello {{ conversation.title }}
 <div class="ui grid">
     <div class="row">
         <div class="sixteen wide fluid column">
-            <h3>
-                {{ conversation.title }}
-            </h3>
-            <p>
-                {{ conversation.tags }}
-                <br>
-                People: {{ conversation.professional.username }} and
-                {{ conversation.patient_penname }}
+            <h2>Welcome back, {{ conversation.patient_penname }}</h2>
+            <table class="ui celled padded table">
+                <thead>
+                    <tr>
+                        <th class="single line">Conversation Name</th>
+                        <th>Tags</th>
+                        <th>Helper Name</th>
 
             </p>
 

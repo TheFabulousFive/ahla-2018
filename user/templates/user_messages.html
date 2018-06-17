@@ -8,9 +8,21 @@ Hello {{ user.username }}
 <div class="ui grid">
     <div class="row">
         <div class="sixteen wide fluid column">
-            <h3>
-                Messages
-            </h3>
+            <div class="find-help">
+                <div class="ui centered card">
+                    <div class="content">
+                        {% if request.user.is_patient %}
+                        <div class="item">
+                
+                            <div class="content">
+                                {% include 'partial_user_create_conversation.html' %}
+                            </div>
+                        </div>
+                        {% endif %}
+                  </div>
+                </div>
+
+            </div>
             <div class="ui relaxed divided list">
                 {% if conversations %}
                     {% for conversation in conversations %}
@@ -45,14 +57,7 @@ Hello {{ user.username }}
                         </div>
                     {% endfor %}
                 {% endif %}
-                {% if request.user.is_patient %}
-                    <div class="item">
-                        <i class="large red heart middle aligned icon"></i>
-                        <div class="content">
-                            {% include 'partial_user_create_conversation.html' %}
-                        </div>
-                    </div>
-                {% endif %}
+                
             </div>
         </div>
 

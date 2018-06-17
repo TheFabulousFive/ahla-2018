@@ -1,6 +1,8 @@
 {% if request.user.is_patient %}
-
-    <button class="ui primary button initiateConversationModel">
+    <h3>Get started by clicking the button below. You will stay competely anonymous during this conversation.</h3>
+    <h3>Be sure to fill out the information on what you need help with completely!</h3>
+    <button class="ui centered button initiateConversationModel">
+        <i class="large red heart middle aligned icon"></i>
         Find Help
     </button>
     <script>
@@ -53,7 +55,7 @@
 
                 </div>
                 <div class="field">
-                    <label for="">Help us find the right person with some tags</label>
+                    <label for="">Type in words that describe what you're going through.</label>
                     <input type="text" name="tags" placeholder="tags">
                 </div>
             </form>
@@ -63,7 +65,7 @@
             <div class="ui black deny button">
                 Cancel
             </div>
-            <div onclick="createConversation()" class="ui positive right labeled icon button">
+            <div onclick="createConversation()" class="ui positive right red labeled icon button">
                 Create
                 <i class="checkmark icon"></i>
             </div>
