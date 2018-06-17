@@ -4,6 +4,7 @@ from core.models import User, Conversation, Message
 from django.contrib.auth import login as _login, authenticate
 from django.db.models import Q
 import json
+from django.views.decorators.csrf import csrf_exempt
 from channels import Group
 
 
@@ -226,7 +227,7 @@ def get_message(request, message_id):
             'error': str(e)
         })
 
-
+@csrf_exempt
 def create_message(request, conversation_id):
     try:
         user = request.user
@@ -235,6 +236,7 @@ def create_message(request, conversation_id):
             "You are not part of this conversation"
 
         post = request.POST
+        print(post)
         text = post.get('text')
         assert text, 'Empty message'
         message = Message.objects.create(
