@@ -203,8 +203,9 @@ view : Model -> Html Msg
 
 view model = 
     appContainer [] [
-        
+    
        chatContainer [] [
+           videoChatElement [] [],
            chatHeader[] [
             chatClose [] [text "<-", text model.message, text model.currentMessageBuffer]
             ,shareIdentitySwitch [] [text "Share your Identity"]
