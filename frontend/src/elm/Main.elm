@@ -6,13 +6,13 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
 import Keyboard
 import WebSocket
-import Json.Decode exposing (decodeString, field, Decoder, int, string, map5, bool)
+import Json.Decode exposing (decodeString, field, Decoder, int, string, float, map5, bool)
 import Json.Encode
 import Http
 
 type alias ChatMessage = 
     {
-        timestamp: String,
+        timestamp: Float,
         uid: String,
         name: String,
         text: String,
@@ -39,36 +39,12 @@ type Msg
     | OnMessageTextInput String
     | FetchAllMessages
     | ReceiveMessages  (Result Http.Error String)
+    | ConfirmCreation (Result Http.Error String)
     -- | MessagesFromClinicians List
 
 chatWSEnpoint = "ws://localhost:8000/user/"
 
-mockMessages = [{
-            timestamp = "222",
-            name = "Steve", 
-            uid = "wwwww",
-            text = "I am here",
-            isPatient = True
-        }, {
-            timestamp =  "222",
-            name = "Steve", 
-            uid = "wwwww",
-            text = "I am here",
-            isPatient = True
-        },{
-            timestamp =  "222",
-            name = "Sue", 
-            uid = "wwwww",
-            text = "I am here",
-            isPatient = False
-        },
-        {
-            timestamp =  "222",
-            name = "Steve", 
-            uid = "wwwww",
-            text = "I am here",
-            isPatient = True
-        }]
+mockMessages = []
 
 initState : Model 
 initState = { messages = mockMessages, currentMessageBuffer = "", message = "", conversationID = ""}
@@ -104,9 +80,15 @@ extractArray k =
         Ok s ->
             s
         Err err ->
-            []
+            [    {
+            timestamp =  222,
+            name = "Steve", 
+            uid = "wwwww",
+            text = (toString err),
+            isPatient = True
+        }]
 
-messageListDecoder = map5 ChatMessage (field "created_at" string) (field "uid" string) (field "name" string) (field "message" string) (field "is_patient" bool)
+messageListDecoder = map5 ChatMessage (field "created_at" float) (field "id" string) (field "username" string) (field "text" string) (field "is_patient" bool)
 
 getAllMessages conversationID = 
   let
@@ -116,6 +98,14 @@ getAllMessages conversationID =
       Http.getString url
   in
     Http.send ReceiveMessages request
+
+makeNewMessage conversationID message = 
+    let
+        url = "http://localhost:8000/user/conversation/message/new/" ++ conversationID ++ "/"
+        submitBody = Http.multipartBody [Http.stringPart "text" message]
+        request = Http.post url submitBody string
+    in
+        Http.send ConfirmCreation request
 
 -- Model updates here
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -128,7 +118,7 @@ update msg model =
                 result = decodeString (field "message" string) ws_msg
                 resultMessage = decodeMessage <| result
                 udpatedMessageFeed = model.messages ++ [{
-                    timestamp = "0000000000",
+                    timestamp = 0000000000,
                     name = "Sue",
                     uid = "wwwww",
                     text = resultMessage,
@@ -145,7 +135,7 @@ update msg model =
                 messageJSON = 
                     encodeChatMessage "0000" model.currentMessageBuffer
             in
-                ( { model | currentMessageBuffer = "" }, WebSocket.send chatWSEnpoint messageJSON)
+                ( { model | currentMessageBuffer = "" }, makeNewMessage model.conversationID model.currentMessageBuffer)
         ReceiveMessages (Ok s) ->
             let              
                 listDecoder = Json.Decode.at ["data", "messages"] (Json.Decode.list messageListDecoder)
